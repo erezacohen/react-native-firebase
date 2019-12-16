@@ -21,6 +21,7 @@ import GithubAuthProvider from './providers/GithubAuthProvider';
 import OAuthProvider from './providers/OAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import FacebookAuthProvider from './providers/FacebookAuthProvider';
+import AppleAuthProvider from './providers/AppleAuthProvider';
 
 import type {
   ActionCodeInfo,
@@ -506,7 +507,11 @@ export default class Auth extends ModuleBase {
    * @return {Promise.<Null>}
    */
   applyActionCode(code: string): Promise<void> {
-    return getNativeModule(this).applyActionCode(code);
+    return getNativeModule(this)
+      .applyActionCode(code)
+      .then(user => {
+        this._setUser(user);
+      });
   }
 
   /**
@@ -631,6 +636,7 @@ export const statics = {
   GithubAuthProvider,
   TwitterAuthProvider,
   FacebookAuthProvider,
+  AppleAuthProvider,
   OAuthProvider,
   PhoneAuthState: {
     CODE_SENT: 'sent',

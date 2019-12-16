@@ -60,6 +60,35 @@ export default class DocumentReference {
     return this._documentPath.relativeName;
   }
 
+  isEqual(otherDocumentReference: DocumentReference) {
+    if (!(otherDocumentReference instanceof DocumentReference)) {
+      throw new Error(
+        'firebase.firestore.DocumentReference.isEqual(*) expects an instance of DocumentReference.'
+      );
+    }
+
+    // check paths match
+    if (this.path !== otherDocumentReference.path) return false;
+
+    // check same firestore app name
+    if (
+      this._firestore.app.name !== otherDocumentReference._firestore.app.name
+    ) {
+      return false;
+    }
+
+    // check same firestore app projectId
+    // noinspection RedundantIfStatementJS
+    if (
+      this._firestore.app.options.projectId !==
+      otherDocumentReference._firestore.app.options.projectId
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   collection(collectionPath: string): CollectionReference {
     const path = this._documentPath.child(collectionPath);
     if (!path.isCollection) {
@@ -84,9 +113,9 @@ export default class DocumentReference {
       }
       if (
         options.source &&
-        (options.source !== 'default' &&
-          options.source !== 'server' &&
-          options.source !== 'cache')
+        options.source !== 'default' &&
+        options.source !== 'server' &&
+        options.source !== 'cache'
       ) {
         return Promise.reject(
           new Error(
